@@ -35,6 +35,8 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         scoreManagerScript = GetComponent<ScoreManager>();
+
+        currentState = MovementState.Idle;
     }
 
     void Update()
@@ -83,6 +85,11 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnDash()
     {
+        if (dashCoroutine != null)
+        {
+            return;
+        }
+
         dashProgress = 0f;
 
         dashDirection = lastMoveDirection;
@@ -111,9 +118,7 @@ public class PlayerMovement : MonoBehaviour
     public void OnClick(InputAction.CallbackContext context)
     {
         //Debug.Log(context);
-
-        
-
+       
         if (context.canceled)
         {
             currentState = MovementState.Click;
@@ -157,7 +162,15 @@ public class PlayerMovement : MonoBehaviour
         if (collision.CompareTag("Coin"))
         {
             Destroy(collision.gameObject);
-            scoreManagerScript.score ++;
+            scoreManagerScript.AddScore();
+        }
+
+        if (collision.CompareTag("Enemy"))
+        {
+            Destroy(collision.gameObject);
+
+            GetComponent<SpriteRenderer>().enabled = false;
+            GetComponent<Collider2D>().enabled = false;
         }
     }
 }

@@ -13,6 +13,11 @@ public class ScoreManager : MonoBehaviour
 
     void Update()
     {
-        scoreText.text = "Score: " + score;
+    }
+
+    public void AddScore()
+    {
+        score++;
+        scoreText.text = "Score: " + score;    
     }
 }

@@ -11,6 +11,7 @@ public class PlayerMovementOne : MonoBehaviour
         Vertical,
         Horizontal,
         Dash,
+        Click,
     }
 
     public MovementState currentState;
@@ -60,7 +61,7 @@ public class PlayerMovementOne : MonoBehaviour
 
     public void OnMove(InputAction.CallbackContext context)
     {
-        if (currentState == MovementState.Dash)
+        if (currentState == MovementState.Dash || currentState == MovementState.Click)
         {
             return;
         }
@@ -85,6 +86,11 @@ public class PlayerMovementOne : MonoBehaviour
 
     public void OnDash()
     {
+        if (dashCoroutine != null)
+        {
+            return;
+        }
+
         dashProgress = 0f;
 
         currentState = MovementState.Dash;
@@ -106,17 +112,19 @@ public class PlayerMovementOne : MonoBehaviour
         }
 
         currentState = MovementState.Idle;
+        dashCoroutine = null;
     }
 
     public void OnClickToMove(InputAction.CallbackContext context)
     {
-
         if (context.canceled)
         { 
             if (clickCoroutine != null)
             {
                 StopCoroutine(clickCoroutine);
             }
+
+            currentState = MovementState.Click;
 
             mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
@@ -146,6 +154,12 @@ public class PlayerMovementOne : MonoBehaviour
             Destroy(collision.gameObject);
 
             scoreManagerScript.ScoreManager();
+        }
+        if (collision.CompareTag("Enemy"))
+        {
+            Destroy(collision.gameObject);
+            GetComponent<SpriteRenderer>().enabled = false;
+            GetComponent<PolygonCollider2D>().enabled = false;
         }
     }
 }
